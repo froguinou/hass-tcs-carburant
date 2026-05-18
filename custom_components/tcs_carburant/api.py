@@ -1,6 +1,8 @@
 import math
 import aiohttp
 
+from datetime import datetime, timezone
+
 from .const import URL
 
 
@@ -116,6 +118,24 @@ def brand_logo(brand):
     )
 
 
+def price_is_recent(last_update, max_age_days=20):
+    if not last_update:
+        return False
+
+    try:
+        update_date = datetime.fromisoformat(
+            last_update.replace("Z", "+00:00")
+        )
+
+        now = datetime.now(timezone.utc)
+        age_days = (now - update_date).days
+
+        return age_days <= max_age_days
+
+    except Exception:
+        return False
+
+
 class TCSCarburantApi:
     def __init__(self, session: aiohttp.ClientSession):
         self.session = session
@@ -215,6 +235,12 @@ def top_stations(stations, fuel_type, home_lat, home_lng, radius_km, limit=10):
 
         if dist <= radius_km:
             fuel = station["fuels"][fuel_type]
+
+            if not price_is_recent(
+                fuel["last_price_update"],
+                max_age_days=20,
+            ):
+                continue
 
             city = extract_city(station["address"])
             display_brand = clean_brand(station["brand"], station["name"])

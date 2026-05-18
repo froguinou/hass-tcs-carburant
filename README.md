@@ -104,6 +104,30 @@ sensor:
 
 ---
 
+## Optional Helpers
+
+For the dynamic Lovelace dashboard, add these helpers to your `configuration.yaml`:
+
+```yaml
+input_select:
+  carburant_tcs:
+    name: Carburant TCS
+    options:
+      - SP95
+      - SP98
+      - DIESEL
+    initial: SP95
+    icon: mdi:gas-station
+
+input_boolean:
+  carburant_tcs_top10:
+    name: Afficher Top 10
+    icon: mdi:format-list-numbered
+```
+Restart Home Assistant after adding them.
+
+---
+
 ## Lovelace Example
 
 Requires:
