@@ -106,10 +106,12 @@ def brand_logo(brand):
         "coop": "coop.png",
         "eni": "eni.png",
         "jubin": "jubin.png",
+        "laposte": "laposte.png",
         "migrol": "migrol.png",
         "miniprix": "miniprix.png",
         "ruedirussel": "ruedirussel.png",
         "shell": "shell.png",
+        "simond": "simond.png",
         "socar": "socar.png",
         "tamoil": "tamoil.png",
     }
@@ -186,17 +188,10 @@ def normalize_station(raw, requested_fuel_type):
     address = properties.get("formattedAddress") or properties.get("address") or ""
     brand = properties.get("brand") or "UNKNOWN"
 
-    lat = (
-        properties.get("latitude")
-        or properties.get("lat")
-    )
+    lat = properties.get("latitude") or properties.get("lat")
+    lng = properties.get("longitude") or properties.get("lng")
 
-    lng = (
-        properties.get("longitude")
-        or properties.get("lng")
-    )
-
-    if geometry and not lat and not lng:
+    if geometry and lat is None and lng is None:
         coordinates = geometry.get("coordinates", [])
 
         if len(coordinates) >= 2:
@@ -208,6 +203,14 @@ def normalize_station(raw, requested_fuel_type):
         or properties.get("displayPrice")
         or properties.get("amount")
     )
+
+    if price is None:
+        return None
+
+    try:
+        price = round(float(price), 3)
+    except (ValueError, TypeError):
+        return None
 
     fiability = (
         properties.get("fiability")
@@ -223,19 +226,19 @@ def normalize_station(raw, requested_fuel_type):
         or f"{brand}_{name}_{lat}_{lng}_{real_fuel_type}"
     )
 
-    if lat is None or lng is None or price is None:
+    if lat is None or lng is None:
         return None
 
     return {
         "id": str(station_id),
-        "name": name,
-        "address": address,
-        "brand": brand,
+        "name": name.strip(),
+        "address": address.strip(),
+        "brand": brand.strip(),
         "lat": float(lat),
         "lng": float(lng),
         "fuels": {
             real_fuel_type: {
-                "price": round(float(price), 3),
+                "price": price,
                 "fiability_level": fiability,
                 "fiability_score": 0,
                 "last_price_update": None,
@@ -297,7 +300,6 @@ class TCSCarburantApi:
                     continue
 
                 key = f"{station['id']}_{requested_fuel}"
-
                 stations[key] = station
 
         return list(stations.values())
@@ -345,6 +347,9 @@ def top_stations(stations, fuel_type, home_lat, home_lng, radius_km, limit=10):
             continue
 
         fuel = station["fuels"][fuel_type]
+
+        if fuel["price"] is None:
+            continue
 
         city = extract_city(station["address"])
         display_brand = clean_brand(station["brand"], station["name"])
