@@ -182,25 +182,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -214,7 +195,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -232,11 +213,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -280,25 +258,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -312,7 +271,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -330,11 +289,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -379,25 +335,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -411,7 +348,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -429,11 +366,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -477,25 +411,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -509,7 +424,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -527,11 +442,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -576,25 +488,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -608,7 +501,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -626,11 +519,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -674,25 +564,6 @@ cards:
             } else {
               ''
             }
-        - name: Jours
-          data: last_price_update
-          align: center
-          modify: |-
-            if (x) {
-              const days = Math.round((Date.now() - Date.parse(x)) / 86400000 * 10) / 10;
-
-              if (days <= 1) {
-                '<span style="color:#00ff00;font-weight:bold">' + days + '</span>'
-              } else if (days <= 3) {
-                '<span style="color:#ffd166;font-weight:bold">' + days + '</span>'
-              } else if (days <= 7) {
-                '<span style="color:#ff8c42;font-weight:bold">' + days + '</span>'
-              } else {
-                '<span style="color:#ff4d4d;font-weight:bold">' + days + '</span>'
-              }
-            } else {
-              ''
-            }
         - name: Qualité
           data: fiability_level
           align: center
@@ -706,7 +577,7 @@ cards:
             } else if (x === 'OUTDATED_LAST_PRICE_UPDATE') {
               '<span style="color:#ff4d4d;font-weight:bold">Très vieux</span>'
             } else {
-              x
+              '<span style="opacity:0.6">' + x + '</span>'
             }
         - name: Maps
           data: maps_url
@@ -724,11 +595,8 @@ cards:
         tbody tr:nth-child(2): "color: #8cff8c"
         tbody tr:nth-child(3): "color: #c8ffc8"
         th: "font-weight: bold; color: white; text-align: center"
-        td: |
-          padding: 4px 6px;
-          vertical-align: middle;
-        td:nth-child(1): |
-          min-width: 170px;
+        td: "padding: 4px 6px; vertical-align: middle"
+        td:nth-child(1): "min-width: 170px"
       card_mod:
         style: |
           ha-card {
@@ -736,6 +604,7 @@ cards:
             overflow: hidden;
             font-size: 13px;
           }
+
 
 ```
 
