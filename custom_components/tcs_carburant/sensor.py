@@ -24,7 +24,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     radius_km = config.get("radius_km", DEFAULT_RADIUS_KM)
 
     async def async_update_data():
-        stations = await api.fetch_stations()
+        stations = await api.fetch_stations(
+            home_lat,
+            home_lng,
+            radius_km,
+        )
 
         result = {}
 
@@ -92,16 +96,19 @@ class TCSBestFuelSensor(SensorEntity):
         return {
             "station": best["name"],
             "brand": best["brand"],
+            "raw_brand": best.get("raw_brand"),
             "address": best["address"],
             "city": best.get("city"),
             "logo": best.get("logo"),
             "station_display": best.get("station_display"),
             "distance_km": best["distance_km"],
-            #"latitude": best["lat"],
-            #"longitude": best["lng"],
+            # Uncomment these two lines if you want stations visible on Home Assistant Map
+            # "latitude": best["lat"],
+            # "longitude": best["lng"],
             "fiability_level": best["fiability_level"],
             "fiability_score": best["fiability_score"],
             "last_price_update": best["last_price_update"],
+            "price_age_days": best.get("price_age_days"),
             "maps_url": best.get("maps_url"),
             "top_3": stations[:3],
             "top_10": stations[:10],
@@ -148,16 +155,19 @@ class TCSRankedFuelSensor(SensorEntity):
             "fuel_type": self.fuel_type,
             "station": station["name"],
             "brand": station["brand"],
+            "raw_brand": station.get("raw_brand"),
             "address": station["address"],
             "city": station.get("city"),
             "logo": station.get("logo"),
             "station_display": station.get("station_display"),
             "distance_km": station["distance_km"],
-            #"latitude": station["lat"],
-            #"longitude": station["lng"],
+            # Uncomment these two lines if you want stations visible on Home Assistant Map
+            # "latitude": station["lat"],
+            # "longitude": station["lng"],
             "fiability_level": station["fiability_level"],
             "fiability_score": station["fiability_score"],
             "last_price_update": station["last_price_update"],
+            "price_age_days": station.get("price_age_days"),
             "maps_url": station.get("maps_url"),
         }
 
