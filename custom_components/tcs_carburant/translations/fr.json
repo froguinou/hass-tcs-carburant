@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TCS Carburant",
+        "description": "Configurez la récupération des prix carburant TCS.",
+        "data": {
+          "radius_km": "Rayon de recherche en km",
+          "hide_outdated": "Masquer les prix très anciens",
+          "update_interval_hours": "Délai de mise à jour en heures"
+        },
+        "data_description": {
+          "radius_km": "Distance maximale autour de la position Home Assistant pour rechercher les stations.",
+          "hide_outdated": "Ignore les stations avec une fiabilité TCS très ancienne.",
+          "update_interval_hours": "Fréquence de mise à jour automatique des prix."
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "TCS Carburant est déjà configuré."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options TCS Carburant",
+        "description": "Ajustez le rayon, le filtrage des prix anciens et le délai de mise à jour.",
+        "data": {
+          "radius_km": "Rayon de recherche en km",
+          "hide_outdated": "Masquer les prix très anciens",
+          "update_interval_hours": "Délai de mise à jour en heures"
+        },
+        "data_description": {
+          "radius_km": "Valeur entre 1 et 100 km.",
+          "hide_outdated": "Masque les stations avec l'état TCS « Très vieux ».",
+          "update_interval_hours": "Valeur entre 1 et 24 heures."
+        }
+      }
+    }
+  }
+}

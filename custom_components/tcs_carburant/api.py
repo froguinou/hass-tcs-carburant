@@ -1,7 +1,9 @@
+"""TCS Carburant API client."""
+
 import math
 import aiohttp
 
-from .const import FUEL_TYPES
+from .const import FUEL_TYPES, OUTDATED_LEVEL
 
 
 URL = (
@@ -50,12 +52,14 @@ def split_bbox(bbox, grid_size=GRID_SIZE):
 
     for x in range(grid_size):
         for y in range(grid_size):
-            boxes.append([
-                min_lon + x * lon_step,
-                min_lat + y * lat_step,
-                min_lon + (x + 1) * lon_step,
-                min_lat + (y + 1) * lat_step,
-            ])
+            boxes.append(
+                [
+                    min_lon + x * lon_step,
+                    min_lat + y * lat_step,
+                    min_lon + (x + 1) * lon_step,
+                    min_lat + (y + 1) * lat_step,
+                ]
+            )
 
     return boxes
 
@@ -306,14 +310,11 @@ class TCSCarburantApi:
 
     async def fetch_stations(
         self,
-        home_lat=None,
-        home_lng=None,
-        radius_km=None,
+        home_lat,
+        home_lng,
+        radius_km,
     ):
         all_stations = []
-
-        if home_lat is None or home_lng is None or radius_km is None:
-            return all_stations
 
         for fuel_type in FUEL_TYPES:
             stations = await self.fetch_stations_by_fuel(
@@ -328,7 +329,15 @@ class TCSCarburantApi:
         return all_stations
 
 
-def top_stations(stations, fuel_type, home_lat, home_lng, radius_km, limit=10):
+def top_stations(
+    stations,
+    fuel_type,
+    home_lat,
+    home_lng,
+    radius_km,
+    limit,
+    hide_outdated,
+):
     candidates = []
     fuel_type = normalize_fuel_type(fuel_type)
 
@@ -351,37 +360,42 @@ def top_stations(stations, fuel_type, home_lat, home_lng, radius_km, limit=10):
         if fuel["price"] is None:
             continue
 
+        if hide_outdated and fuel["fiability_level"] == OUTDATED_LEVEL:
+            continue
+
         city = extract_city(station["address"])
         display_brand = clean_brand(station["brand"], station["name"])
         logo = brand_logo(station["brand"])
 
-        candidates.append({
-            "name": station["name"],
-            "brand": display_brand,
-            "raw_brand": station["brand"],
-            "address": station["address"],
-            "city": city,
-            "logo": logo,
-            "lat": station["lat"],
-            "lng": station["lng"],
-            "distance_km": round(dist, 2),
-            "price": round(fuel["price"], 3),
-            "fiability_level": fuel["fiability_level"],
-            "fiability_score": fuel["fiability_score"],
-            "last_price_update": fuel["last_price_update"],
-            "price_age_days": None,
-            "maps_url": (
-                "https://www.google.com/maps/search/?api=1&query="
-                f"{station['lat']},{station['lng']}"
-            ),
-            "station_display": (
-                f"<img src='{logo}' width='28' "
-                f"style='vertical-align:middle;margin-right:8px;'>"
-                f"<b>{display_brand + ' - ' if display_brand else ''}"
-                f"{station['name']}</b><br>"
-                f"<span style='font-size:11px;opacity:0.75'>{city}</span>"
-            ),
-        })
+        candidates.append(
+            {
+                "name": station["name"],
+                "brand": display_brand,
+                "raw_brand": station["brand"],
+                "address": station["address"],
+                "city": city,
+                "logo": logo,
+                "lat": station["lat"],
+                "lng": station["lng"],
+                "distance_km": round(dist, 2),
+                "price": round(fuel["price"], 3),
+                "fiability_level": fuel["fiability_level"],
+                "fiability_score": fuel["fiability_score"],
+                "last_price_update": fuel["last_price_update"],
+                "price_age_days": None,
+                "maps_url": (
+                    "https://www.google.com/maps/search/?api=1&query="
+                    f"{station['lat']},{station['lng']}"
+                ),
+                "station_display": (
+                    f"<img src='{logo}' width='28' "
+                    f"style='vertical-align:middle;margin-right:8px;'>"
+                    f"<b>{display_brand + ' - ' if display_brand else ''}"
+                    f"{station['name']}</b><br>"
+                    f"<span style='font-size:11px;opacity:0.75'>{city}</span>"
+                ),
+            }
+        )
 
     candidates = sorted(
         candidates,

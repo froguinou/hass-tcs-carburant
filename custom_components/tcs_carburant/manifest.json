@@ -1,12 +1,13 @@
 {
   "domain": "tcs_carburant",
   "name": "TCS Carburant",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "documentation": "https://github.com/froguinou/hass-tcs-carburant",
   "issue_tracker": "https://github.com/froguinou/hass-tcs-carburant/issues",
   "codeowners": ["@froguinou"],
   "requirements": [],
   "dependencies": [],
   "iot_class": "cloud_polling",
-  "integration_type": "service"
+  "integration_type": "service",
+  "config_flow": true
 }

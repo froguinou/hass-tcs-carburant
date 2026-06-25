@@ -1,13 +1,27 @@
 DOMAIN = "tcs_carburant"
 
-FIREBASE_API_KEY = "AIzaSyCQ8f6sXb1gYIiv5rlHKeZ2EVMzC-anzIU"
-
-URL = (
-    "https://firestore.googleapis.com/v1/projects/"
-    "gas-prices-prod/databases/(default)/documents:runQuery"
-    f"?key={FIREBASE_API_KEY}"
-)
-
-FUEL_TYPES = ["SP95", "SP98", "DIESEL"]
+PLATFORMS = ["sensor"]
 
 DEFAULT_RADIUS_KM = 20
+DEFAULT_HIDE_OUTDATED = True
+DEFAULT_UPDATE_INTERVAL_HOURS = 6
+
+MIN_RADIUS_KM = 1
+MAX_RADIUS_KM = 100
+
+MIN_UPDATE_INTERVAL_HOURS = 1
+MAX_UPDATE_INTERVAL_HOURS = 24
+
+TOP_LIMIT = 10
+
+CONF_RADIUS_KM = "radius_km"
+CONF_HIDE_OUTDATED = "hide_outdated"
+CONF_UPDATE_INTERVAL_HOURS = "update_interval_hours"
+
+FUEL_TYPES = [
+    "SP95",
+    "SP98",
+    "DIESEL",
+]
+
+OUTDATED_LEVEL = "OUTDATED_LAST_PRICE_UPDATE"

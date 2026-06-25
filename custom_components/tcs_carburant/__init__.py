@@ -4,7 +4,10 @@ from pathlib import Path
 import logging
 import shutil
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+
+from .const import DOMAIN, PLATFORMS
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,9 +34,32 @@ def _install_logos(hass: HomeAssistant) -> None:
             shutil.copy2(logo, destination)
 
 
-async def async_setup(hass: HomeAssistant, config):
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    await hass.async_add_executor_job(_install_logos, hass)
+    return True
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.async_add_executor_job(_install_logos, hass)
 
-    _LOGGER.info("TCS Carburant logos installed")
+    entry.async_on_unload(
+        entry.add_update_listener(async_update_options)
+    )
+
+    await hass.config_entries.async_forward_entry_setups(
+        entry,
+        PLATFORMS,
+    )
 
     return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    return await hass.config_entries.async_unload_platforms(
+        entry,
+        PLATFORMS,
+    )
+
+
+async def async_update_options(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    await hass.config_entries.async_reload(entry.entry_id)

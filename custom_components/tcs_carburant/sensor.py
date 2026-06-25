@@ -1,55 +1,20 @@
-import logging
-from datetime import timedelta
+"""Sensors for TCS Carburant."""
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .api import TCSCarburantApi, top_stations
-from .const import DOMAIN, FUEL_TYPES, DEFAULT_RADIUS_KM
-
-
-_LOGGER = logging.getLogger(__name__)
-
-SCAN_INTERVAL = timedelta(hours=6)
-TOP_LIMIT = 10
+from .const import FUEL_TYPES, TOP_LIMIT
+from .coordinator import TCSCarburantCoordinator
 
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+async def async_setup_entry(hass, entry, async_add_entities):
     session = async_get_clientsession(hass)
-    api = TCSCarburantApi(session)
 
-    home_lat = hass.config.latitude
-    home_lng = hass.config.longitude
-    radius_km = config.get("radius_km", DEFAULT_RADIUS_KM)
-
-    async def async_update_data():
-        stations = await api.fetch_stations(
-            home_lat,
-            home_lng,
-            radius_km,
-        )
-
-        result = {}
-
-        for fuel in FUEL_TYPES:
-            result[fuel] = top_stations(
-                stations,
-                fuel,
-                home_lat,
-                home_lng,
-                radius_km,
-                limit=TOP_LIMIT,
-            )
-
-        return result
-
-    coordinator = DataUpdateCoordinator(
+    coordinator = TCSCarburantCoordinator(
         hass,
-        _LOGGER,
-        name=DOMAIN,
-        update_method=async_update_data,
-        update_interval=SCAN_INTERVAL,
+        entry,
+        session,
     )
 
     await coordinator.async_config_entry_first_refresh()
@@ -60,99 +25,47 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         entities.append(TCSBestFuelSensor(coordinator, fuel))
 
         for rank in range(1, TOP_LIMIT + 1):
-            entities.append(TCSRankedFuelSensor(coordinator, fuel, rank))
+            entities.append(
+                TCSRankedFuelSensor(
+                    coordinator,
+                    fuel,
+                    rank,
+                )
+            )
 
     async_add_entities(entities)
 
 
-class TCSBestFuelSensor(SensorEntity):
+class TCSBaseSensor(CoordinatorEntity, SensorEntity):
+    _attr_icon = "mdi:gas-station"
+    _attr_native_unit_of_measurement = "CHF/l"
+
     def __init__(self, coordinator, fuel_type):
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self.fuel_type = fuel_type
-
-        self._attr_name = f"TCS {fuel_type} moins cher"
-        self._attr_unique_id = f"tcs_carburant_{fuel_type.lower()}_moins_cher"
-        self._attr_native_unit_of_measurement = "CHF/l"
-        self._attr_icon = "mdi:gas-station"
-
-    @property
-    def native_value(self):
-        stations = self.coordinator.data.get(self.fuel_type)
-
-        if not stations:
-            return None
-
-        return stations[0]["price"]
-
-    @property
-    def extra_state_attributes(self):
-        stations = self.coordinator.data.get(self.fuel_type)
-
-        if not stations:
-            return {}
-
-        best = stations[0]
-
-        return {
-            "station": best["name"],
-            "brand": best["brand"],
-            "raw_brand": best.get("raw_brand"),
-            "address": best["address"],
-            "city": best.get("city"),
-            "logo": best.get("logo"),
-            "station_display": best.get("station_display"),
-            "distance_km": best["distance_km"],
-            # Uncomment these two lines if you want stations visible on Home Assistant Map
-            # "latitude": best["lat"],
-            # "longitude": best["lng"],
-            "fiability_level": best["fiability_level"],
-            "fiability_score": best["fiability_score"],
-            "last_price_update": best["last_price_update"],
-            "price_age_days": best.get("price_age_days"),
-            "maps_url": best.get("maps_url"),
-            "top_3": stations[:3],
-            "top_10": stations[:10],
-        }
 
     @property
     def available(self):
-        return self.coordinator.last_update_success
-
-    async def async_update(self):
-        await self.coordinator.async_request_refresh()
-
-
-class TCSRankedFuelSensor(SensorEntity):
-    def __init__(self, coordinator, fuel_type, rank):
-        self.coordinator = coordinator
-        self.fuel_type = fuel_type
-        self.rank = rank
-        self.index = rank - 1
-
-        self._attr_name = f"TCS {fuel_type} Top {rank}"
-        self._attr_unique_id = f"tcs_carburant_{fuel_type.lower()}_top_{rank}"
-        self._attr_native_unit_of_measurement = "CHF/l"
-        self._attr_icon = "mdi:gas-station"
+        return (
+            super().available
+            and self.station is not None
+        )
 
     @property
     def native_value(self):
-        station = self._station()
-
-        if not station:
+        if not self.station:
             return None
 
-        return station["price"]
+        return self.station["price"]
 
     @property
     def extra_state_attributes(self):
-        station = self._station()
+        station = self.station
 
         if not station:
             return {}
 
         return {
-            "rank": self.rank,
-            "fuel_type": self.fuel_type,
             "station": station["name"],
             "brand": station["brand"],
             "raw_brand": station.get("raw_brand"),
@@ -171,7 +84,48 @@ class TCSRankedFuelSensor(SensorEntity):
             "maps_url": station.get("maps_url"),
         }
 
-    def _station(self):
+
+class TCSBestFuelSensor(TCSBaseSensor):
+    def __init__(self, coordinator, fuel_type):
+        super().__init__(coordinator, fuel_type)
+
+        self._attr_name = f"TCS {fuel_type} moins cher"
+        self._attr_unique_id = f"tcs_carburant_{fuel_type.lower()}_moins_cher"
+
+    @property
+    def station(self):
+        stations = self.coordinator.data.get(self.fuel_type)
+
+        if not stations:
+            return None
+
+        return stations[0]
+
+    @property
+    def extra_state_attributes(self):
+        attributes = super().extra_state_attributes
+
+        stations = self.coordinator.data.get(self.fuel_type)
+
+        if stations:
+            attributes["top_3"] = stations[:3]
+            attributes["top_10"] = stations[:10]
+
+        return attributes
+
+
+class TCSRankedFuelSensor(TCSBaseSensor):
+    def __init__(self, coordinator, fuel_type, rank):
+        super().__init__(coordinator, fuel_type)
+
+        self.rank = rank
+        self.index = rank - 1
+
+        self._attr_name = f"TCS {fuel_type} Top {rank}"
+        self._attr_unique_id = f"tcs_carburant_{fuel_type.lower()}_top_{rank}"
+
+    @property
+    def station(self):
         stations = self.coordinator.data.get(self.fuel_type)
 
         if not stations:
@@ -183,8 +137,8 @@ class TCSRankedFuelSensor(SensorEntity):
         return stations[self.index]
 
     @property
-    def available(self):
-        return self.coordinator.last_update_success and self._station() is not None
-
-    async def async_update(self):
-        await self.coordinator.async_request_refresh()
+    def extra_state_attributes(self):
+        attributes = super().extra_state_attributes
+        attributes["rank"] = self.rank
+        attributes["fuel_type"] = self.fuel_type
+        return attributes
